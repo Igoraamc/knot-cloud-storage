@@ -1,0 +1,3 @@
+server="localhost"
+database="things_db"
+port=":3000"
