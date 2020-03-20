@@ -46,7 +46,9 @@ func (s *Server) checkDeviceIdPermission() negroni.Handler {
 
 		params := strings.Split(url[0], "/")
 
-		if r.Method == "POST" || params[2] == "teste-12345" {
+		print(r.URL.String())
+
+		if r.URL.String() == "/healthcheck" || r.Method == "POST" || params[2] == "teste-12345" {
 			next(w, r)
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -67,6 +69,8 @@ func (s *Server) createRouters() *negroni.Negroni {
 	r.HandleFunc("/data/{deviceId}", dataController.GetAll).Methods("GET")
 	r.HandleFunc("/data/{deviceId}/sensor/{id}", dataController.GetByID).Methods("GET")
 	r.HandleFunc("/data", dataController.Create).Methods("POST")
+
+	r.HandleFunc("/healthcheck", s.healthcheckHandler)
 
 	return n
 }
