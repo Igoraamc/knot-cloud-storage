@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	. "github.com/Igoraamc/knot-cloud-storage/pkg/entities"
-	. "github.com/Igoraamc/knot-cloud-storage/pkg/interactor"
+	. "github.com/CESARBR/knot-cloud-storage/pkg/entities"
+	. "github.com/CESARBR/knot-cloud-storage/pkg/interactor"
 	"github.com/gorilla/mux"
 )
 
@@ -25,7 +25,7 @@ type errorMessage struct {
 	message string
 }
 
-var dao = DataDAO{}
+var dataInteractor = DataInteractor{}
 
 func NewDataController() *DataController {
 	return &DataController{}
@@ -50,7 +50,7 @@ func (d *DataController) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	things, err := dao.GetAll(order, skip, take, startDate, finishDate)
+	things, err := dataInteractor.GetAll(order, skip, take, startDate, finishDate)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -65,7 +65,7 @@ func (d *DataController) GetByID(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnprocessableEntity, errUrl.message)
 		return
 	}
-	thing, err := dao.GetByID(params["id"], order, skip, take, startDate, finishDate)
+	thing, err := dataInteractor.GetByID(params["id"], order, skip, take, startDate, finishDate)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Thing ID")
 	}
@@ -73,7 +73,6 @@ func (d *DataController) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *DataController) Create(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
 	var thing Data
 	if err := json.NewDecoder(r.Body).Decode(&thing); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -81,11 +80,13 @@ func (d *DataController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	// thing.ID = bson.NewObjectId()
 	thing.Timestamp = time.Now()
-	if err := dao.Create(thing); err != nil {
+	if err := dataInteractor.Create(thing); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithJson(w, http.StatusCreated, thing)
+	defer r.Body.Close()
+
 }
 
 func getUrlQueryParams(r *http.Request) (order int, skip int, take int, startDate time.Time, finishDate time.Time, errorStatus errorMessage) {

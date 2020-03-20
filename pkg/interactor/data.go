@@ -1,62 +1,30 @@
 package interactor
 
 import (
-	"log"
 	"strconv"
 	"time"
 
-	. "github.com/Igoraamc/knot-cloud-storage/pkg/entities"
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/CESARBR/knot-cloud-storage/pkg/data"
+	. "github.com/CESARBR/knot-cloud-storage/pkg/entities"
 )
 
-type DataDAO struct {
-	Server   string
-	Database string
-}
+type DataInteractor struct{}
 
-var db *mgo.Database
+var dataStore = data.NewDataStore()
 
-const (
-	COLLECTION = "things"
-)
-
-func (m *DataDAO) Connect() {
-	session, err := mgo.Dial(m.Server)
-	if err != nil {
-		log.Fatal(err)
-	}
-	db = session.DB(m.Database)
-}
-
-func (m *DataDAO) GetAll(order int, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
-	var data []Data
+func (d *DataInteractor) GetAll(order int, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
 
 	selectOrder := "timestamp"
 	if order == -1 {
 		selectOrder = "-timestamp"
 	}
 
-	err := db.C(COLLECTION).Find(bson.M{
-		"timestamp": bson.M{
-			"$gt": startDate,
-			"$lt": finishDate,
-		},
-	}).Select(bson.M{
-		"timestamp": 1,
-		"payload":   1,
-		"from":      1,
-	}).Skip(skip).Sort(selectOrder).Limit(take).All(&data)
-
-	if data == nil {
-		data = []Data{}
-	}
+	data, err := dataStore.GetAll(selectOrder, skip, take, startDate, finishDate)
 
 	return data, err
 }
 
-func (m *DataDAO) GetByID(id string, order int, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
-	var data []Data
+func (d *DataInteractor) GetByID(id string, order int, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
 
 	selectOrder := "timestamp"
 	if order == -1 {
@@ -65,37 +33,14 @@ func (m *DataDAO) GetByID(id string, order int, skip int, take int, startDate ti
 
 	s, _ := strconv.ParseInt(id, 10, 64)
 
-	err := db.C(COLLECTION).Find(bson.M{
-		"timestamp": bson.M{
-			"$gt": startDate,
-			"$lt": finishDate,
-		},
-	}).Select(bson.M{
-		"timestamp": 1,
-		"payload":   1,
-		"from":      1,
-	}).Skip(skip).Sort(selectOrder).Limit(take).All(&data)
-
-	if data == nil {
-		data = []Data{}
-	}
+	data, err := dataStore.GetByID(selectOrder, skip, take, startDate, finishDate)
 
 	data = FilterBySensorId(data, int(s))
 	return data, err
 }
 
-func (m *DataDAO) Create(data Data) error {
-	err := db.C(COLLECTION).Insert(&data)
-	return err
-}
-
-func (m *DataDAO) Delete(id string) error {
-	err := db.C(COLLECTION).RemoveId(bson.ObjectIdHex(id))
-	return err
-}
-
-func (m *DataDAO) Update(id string, data Data) error {
-	err := db.C(COLLECTION).UpdateId(bson.ObjectIdHex(id), &data)
+func (d *DataInteractor) Create(data Data) error {
+	err := dataStore.Create(data)
 	return err
 }
 

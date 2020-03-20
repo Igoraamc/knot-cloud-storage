@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
+	"github.com/CESARBR/knot-cloud-storage/pkg/controllers"
 	"github.com/CESARBR/knot-cloud-storage/pkg/logging"
+	"github.com/urfave/negroni"
 
 	"github.com/gorilla/mux"
 )
@@ -36,10 +39,36 @@ func (s *Server) Start() {
 	}
 }
 
-func (s *Server) createRouters() *mux.Router {
-	r := mux.NewRouter()
-	r.HandleFunc("/healthcheck", s.healthcheckHandler)
-	return r
+func (s *Server) checkDeviceIdPermission() negroni.Handler {
+	return negroni.HandlerFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+
+		url := strings.Split(r.URL.String(), "?")
+
+		params := strings.Split(url[0], "/")
+
+		if r.Method == "POST" || params[2] == "teste-12345" {
+			next(w, r)
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+	})
+}
+
+func (s *Server) createRouters() *negroni.Negroni {
+	dataController := controllers.NewDataController()
+	n := negroni.Classic()
+
+	n.Use(s.checkDeviceIdPermission())
+
+	r := mux.NewRouter().StrictSlash(true)
+
+	n.UseHandler(r)
+
+	r.HandleFunc("/data/{deviceId}", dataController.GetAll).Methods("GET")
+	r.HandleFunc("/data/{deviceId}/sensor/{id}", dataController.GetByID).Methods("GET")
+	r.HandleFunc("/data", dataController.Create).Methods("POST")
+
+	return n
 }
 
 func (s *Server) logRequest(handler http.Handler) http.Handler {
