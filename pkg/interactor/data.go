@@ -6,6 +6,7 @@ import (
 
 	"github.com/CESARBR/knot-cloud-storage/pkg/data"
 	. "github.com/CESARBR/knot-cloud-storage/pkg/entities"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var dataStore = data.NewDataStore()
@@ -49,12 +50,12 @@ func (d *DataInteractor) Save(data Data) error {
 }
 
 func (d *DataInteractor) DeleteByDevice(deviceId string) (error error) {
-	err := dataStore.DeleteByDevice(deviceId)
+	err := dataStore.Delete(bson.M{"from": deviceId})
 	return err
 }
 
 func (d *DataInteractor) DeleteAll() (error error) {
-	err := dataStore.DeleteAll()
+	err := dataStore.Delete(nil)
 	return err
 }
 

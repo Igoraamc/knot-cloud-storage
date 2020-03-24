@@ -47,11 +47,7 @@ func (ds *DataStore) Save(data Data) error {
 	return err
 }
 
-func (ds *DataStore) DeleteAll() error {
-	_, err := db.C(collection).RemoveAll(nil)
-	return err
-}
-func (ds *DataStore) DeleteByDevice(deviceId string) error {
-	_, err := db.C(collection).RemoveAll(bson.M{"from": deviceId})
+func (ds *DataStore) Delete(param bson.M) error {
+	_, err := db.C(collection).RemoveAll(param)
 	return err
 }

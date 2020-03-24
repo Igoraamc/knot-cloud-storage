@@ -39,7 +39,9 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(response)
+	if payload != nil {
+		w.Write(response)
+	}
 }
 
 func (d *DataController) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +97,7 @@ func (d *DataController) DeleteAll(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadGateway, "Invalid information")
 	}
 
-	respondWithJson(w, http.StatusOK, 0)
+	respondWithJson(w, http.StatusOK, nil)
 }
 
 func (d *DataController) DeleteByDevice(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +109,7 @@ func (d *DataController) DeleteByDevice(w http.ResponseWriter, r *http.Request) 
 		respondWithError(w, http.StatusBadGateway, "Invalid information")
 	}
 
-	respondWithJson(w, http.StatusOK, 0)
+	respondWithJson(w, http.StatusOK, nil)
 }
 
 func getUrlQueryParams(r *http.Request) (order int, skip int, take int, startDate time.Time, finishDate time.Time, errorStatus errorMessage) {
