@@ -10,8 +10,7 @@ import (
 type DataStore struct{}
 
 type IDataStore interface {
-	GetAll()
-	GetByID()
+	Get()
 	Create()
 }
 
@@ -23,28 +22,7 @@ func NewDataStore() DataStore {
 	return DataStore{}
 }
 
-func (ds *DataStore) GetAll(order string, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
-	var data []Data
-
-	err := db.C(COLLECTION).Find(bson.M{
-		"timestamp": bson.M{
-			"$gt": startDate,
-			"$lt": finishDate,
-		},
-	}).Select(bson.M{
-		"timestamp": 1,
-		"payload":   1,
-		"from":      1,
-	}).Skip(skip).Sort(order).Limit(take).All(&data)
-
-	if data == nil {
-		data = []Data{}
-	}
-
-	return data, err
-}
-
-func (ds *DataStore) GetByID(order string, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
+func (ds *DataStore) Get(order string, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
 	var data []Data
 
 	err := db.C(COLLECTION).Find(bson.M{

@@ -19,7 +19,7 @@ func (d *DataInteractor) GetAll(order int, skip int, take int, startDate time.Ti
 		selectOrder = "-timestamp"
 	}
 
-	data, err := dataStore.GetAll(selectOrder, skip, take, startDate, finishDate)
+	data, err := dataStore.Get(selectOrder, skip, take, startDate, finishDate)
 
 	return data, err
 }
@@ -33,7 +33,7 @@ func (d *DataInteractor) GetByID(id string, order int, skip int, take int, start
 
 	s, _ := strconv.ParseInt(id, 10, 64)
 
-	data, err := dataStore.GetByID(selectOrder, skip, take, startDate, finishDate)
+	data, err := dataStore.Get(selectOrder, skip, take, startDate, finishDate)
 
 	data = FilterBySensorId(data, int(s))
 	return data, err
