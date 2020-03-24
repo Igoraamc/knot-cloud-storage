@@ -12,9 +12,9 @@ const collection = "things"
 type DataStore struct{}
 
 type IDataStore interface {
-	Get()
-	Create()
-	Delete()
+	Get(order string, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error)
+	Create(data Data) error
+	Delete(param bson.M) error
 }
 
 func NewDataStore() DataStore {

@@ -20,6 +20,8 @@ type DataInterface interface {
 	GetAll()
 	GetByID()
 	Create()
+	DeleteAll()
+	DeleteByDevice()
 }
 
 type errorMessage struct {
