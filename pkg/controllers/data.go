@@ -89,6 +89,27 @@ func (d *DataController) Save(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (d *DataController) DeleteAll(w http.ResponseWriter, r *http.Request) {
+	err := dataInteractor.DeleteAll()
+	if err != nil {
+		respondWithError(w, http.StatusBadGateway, "Invalid information")
+	}
+
+	respondWithJson(w, http.StatusOK, 0)
+}
+
+func (d *DataController) DeleteByDevice(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	deviceId := params["deviceId"]
+
+	err := dataInteractor.DeleteByDevice(deviceId)
+	if err != nil {
+		respondWithError(w, http.StatusBadGateway, "Invalid information")
+	}
+
+	respondWithJson(w, http.StatusOK, 0)
+}
+
 func getUrlQueryParams(r *http.Request) (order int, skip int, take int, startDate time.Time, finishDate time.Time, errorStatus errorMessage) {
 	order = 1
 	skip = 0

@@ -14,6 +14,7 @@ type DataStore struct{}
 type IDataStore interface {
 	Get()
 	Create()
+	Delete()
 }
 
 func NewDataStore() DataStore {
@@ -43,5 +44,14 @@ func (ds *DataStore) Get(order string, skip int, take int, startDate time.Time, 
 
 func (ds *DataStore) Save(data Data) error {
 	err := db.C(collection).Insert(&data)
+	return err
+}
+
+func (ds *DataStore) DeleteAll() error {
+	_, err := db.C(collection).RemoveAll(nil)
+	return err
+}
+func (ds *DataStore) DeleteByDevice(deviceId string) error {
+	_, err := db.C(collection).RemoveAll(bson.M{"from": deviceId})
 	return err
 }

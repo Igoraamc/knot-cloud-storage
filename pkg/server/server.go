@@ -41,9 +41,12 @@ func (s *Server) createRouters() *mux.Router {
 	dataController := controllers.NewDataController()
 	r := mux.NewRouter().StrictSlash(true)
 
-	r.HandleFunc("/data/{deviceId}", dataController.GetAll).Methods("GET")
-	r.HandleFunc("/data/{deviceId}/sensor/{id}", dataController.GetByID).Methods("GET")
+	r.HandleFunc("/data/{user}", dataController.GetAll).Methods("GET")
+	r.HandleFunc("/data/{user}/sensor/{id}", dataController.GetByID).Methods("GET")
 	r.HandleFunc("/data", dataController.Save).Methods("POST")
+	r.HandleFunc("/data/{user}", dataController.DeleteAll).Methods("DELETE")
+	r.HandleFunc("/data/{user}/deviceId/{deviceId}", dataController.DeleteByDevice).Methods("DELETE")
+
 	r.HandleFunc("/healthcheck", s.healthcheckHandler)
 
 	return r

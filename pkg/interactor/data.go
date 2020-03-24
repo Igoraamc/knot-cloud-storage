@@ -48,6 +48,16 @@ func (d *DataInteractor) Save(data Data) error {
 	return err
 }
 
+func (d *DataInteractor) DeleteByDevice(deviceId string) (error error) {
+	err := dataStore.DeleteByDevice(deviceId)
+	return err
+}
+
+func (d *DataInteractor) DeleteAll() (error error) {
+	err := dataStore.DeleteAll()
+	return err
+}
+
 func FilterDataBySensorID(data []Data, sensorId int) []Data {
 	filteredData := make([]Data, 0)
 	for _, v := range data {
