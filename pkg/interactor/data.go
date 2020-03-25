@@ -8,9 +8,9 @@ import (
 	. "github.com/CESARBR/knot-cloud-storage/pkg/entities"
 )
 
-type DataInteractor struct{}
-
 var dataStore = data.NewDataStore()
+
+type DataInteractor struct{}
 
 func NewDataInteractor() *DataInteractor {
 	return &DataInteractor{}

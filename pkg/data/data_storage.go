@@ -7,16 +7,14 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+const collection = "things"
+
 type DataStore struct{}
 
 type IDataStore interface {
 	Get()
 	Create()
 }
-
-const (
-	COLLECTION = "things"
-)
 
 func NewDataStore() DataStore {
 	return DataStore{}
@@ -25,7 +23,7 @@ func NewDataStore() DataStore {
 func (ds *DataStore) Get(order string, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
 	var data []Data
 
-	err := db.C(COLLECTION).Find(bson.M{
+	err := db.C(collection).Find(bson.M{
 		"timestamp": bson.M{
 			"$gt": startDate,
 			"$lt": finishDate,
@@ -44,6 +42,6 @@ func (ds *DataStore) Get(order string, skip int, take int, startDate time.Time, 
 }
 
 func (ds *DataStore) Save(data Data) error {
-	err := db.C(COLLECTION).Insert(&data)
+	err := db.C(collection).Insert(&data)
 	return err
 }

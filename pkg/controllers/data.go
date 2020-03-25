@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var dataInteractor = interactor.NewDataInteractor()
+
 type DataController struct{}
 
 type DataInterface interface {
@@ -24,8 +26,6 @@ type errorMessage struct {
 	error   bool
 	message string
 }
-
-var dataInteractor = interactor.NewDataInteractor()
 
 func NewDataController() *DataController {
 	return &DataController{}

@@ -4,12 +4,12 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
+var db *mgo.Database
+
 type Storage struct {
 	Server   string
 	Database string
 }
-
-var db *mgo.Database
 
 func NewStorage(server string, database string) *Storage {
 	return &Storage{server, database}
