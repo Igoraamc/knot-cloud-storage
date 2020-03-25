@@ -46,7 +46,6 @@ func (s *Server) createRouters() *mux.Router {
 	r.HandleFunc("/data", dataController.Save).Methods("POST")
 	r.HandleFunc("/data/{user}", dataController.DeleteAll).Methods("DELETE")
 	r.HandleFunc("/data/{user}/deviceId/{deviceId}", dataController.DeleteByDevice).Methods("DELETE")
-
 	r.HandleFunc("/healthcheck", s.healthcheckHandler)
 
 	return r
