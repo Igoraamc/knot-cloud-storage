@@ -8,7 +8,7 @@ import (
 	"time"
 
 	. "github.com/CESARBR/knot-cloud-storage/pkg/entities"
-	. "github.com/CESARBR/knot-cloud-storage/pkg/interactor"
+	"github.com/CESARBR/knot-cloud-storage/pkg/interactor"
 	"github.com/gorilla/mux"
 )
 
@@ -25,7 +25,7 @@ type errorMessage struct {
 	message string
 }
 
-var dataInteractor = DataInteractor{}
+var dataInteractor = interactor.NewDataInteractor()
 
 func NewDataController() *DataController {
 	return &DataController{}

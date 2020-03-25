@@ -12,6 +12,10 @@ type DataInteractor struct{}
 
 var dataStore = data.NewDataStore()
 
+func NewDataInteractor() *DataInteractor {
+	return &DataInteractor{}
+}
+
 func (d *DataInteractor) GetAll(order int, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
 
 	selectOrder := "timestamp"
