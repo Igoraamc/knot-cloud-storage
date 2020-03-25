@@ -1,22 +1,26 @@
 package data
 
 import (
-	"log"
-
 	"gopkg.in/mgo.v2"
 )
 
-type DataDAO struct {
+type Storage struct {
 	Server   string
 	Database string
 }
 
 var db *mgo.Database
 
-func (m *DataDAO) Connect() {
-	session, err := mgo.Dial(m.Server)
+func NewStorage(server string, database string) *Storage {
+	return &Storage{server, database}
+}
+
+func (s *Storage) Connect() error {
+	session, err := mgo.Dial(s.Server)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	db = session.DB(m.Database)
+	db = session.DB(s.Database)
+
+	return nil
 }

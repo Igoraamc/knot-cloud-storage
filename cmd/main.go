@@ -7,17 +7,13 @@ import (
 	"github.com/CESARBR/knot-cloud-storage/pkg/server"
 )
 
-var dao = data.DataDAO{}
-
 func main() {
 	config := config.Load()
 
-	dao.Database = config.MongoDB.Name
-	dao.Server = config.MongoDB.Host
-	dao.Connect()
+	storage := data.NewStorage(config.MongoDB.Host, config.MongoDB.Name)
+	storage.Connect()
 
 	logrus := logging.NewLogrus(config.Logger.Level)
-
 	logger := logrus.Get("Main")
 	logger.Info("Starting KNoT Babeltower")
 
