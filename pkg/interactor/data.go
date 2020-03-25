@@ -35,21 +35,21 @@ func (d *DataInteractor) GetByID(id string, order int, skip int, take int, start
 
 	data, err := dataStore.Get(selectOrder, skip, take, startDate, finishDate)
 
-	data = FilterBySensorId(data, int(s))
+	data = FilterDataBySensorID(data, int(s))
 	return data, err
 }
 
-func (d *DataInteractor) Create(data Data) error {
-	err := dataStore.Create(data)
+func (d *DataInteractor) Save(data Data) error {
+	err := dataStore.Save(data)
 	return err
 }
 
-func FilterBySensorId(array []Data, sensorId int) []Data {
-	newArray := make([]Data, 0)
-	for _, v := range array {
+func FilterDataBySensorID(data []Data, sensorId int) []Data {
+	filteredData := make([]Data, 0)
+	for _, v := range data {
 		if v.Payload.SensorId == sensorId {
-			newArray = append(newArray, v)
+			filteredData = append(filteredData, v)
 		}
 	}
-	return newArray
+	return filteredData
 }

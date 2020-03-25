@@ -18,8 +18,6 @@ type DataInterface interface {
 	GetAll()
 	GetByID()
 	Create()
-	DeleteAll()
-	DeleteByDevice()
 }
 
 type errorMessage struct {
@@ -74,7 +72,7 @@ func (d *DataController) GetByID(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusOK, thing)
 }
 
-func (d *DataController) Create(w http.ResponseWriter, r *http.Request) {
+func (d *DataController) Save(w http.ResponseWriter, r *http.Request) {
 	var thing Data
 	if err := json.NewDecoder(r.Body).Decode(&thing); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -82,7 +80,7 @@ func (d *DataController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	// thing.ID = bson.NewObjectId()
 	thing.Timestamp = time.Now()
-	if err := dataInteractor.Create(thing); err != nil {
+	if err := dataInteractor.Save(thing); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

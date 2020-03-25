@@ -43,7 +43,7 @@ func (ds *DataStore) Get(order string, skip int, take int, startDate time.Time, 
 	return data, err
 }
 
-func (ds *DataStore) Create(data Data) error {
+func (ds *DataStore) Save(data Data) error {
 	err := db.C(COLLECTION).Insert(&data)
 	return err
 }

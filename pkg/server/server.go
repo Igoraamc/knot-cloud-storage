@@ -68,7 +68,7 @@ func (s *Server) createRouters() *negroni.Negroni {
 
 	r.HandleFunc("/data/{deviceId}", dataController.GetAll).Methods("GET")
 	r.HandleFunc("/data/{deviceId}/sensor/{id}", dataController.GetByID).Methods("GET")
-	r.HandleFunc("/data", dataController.Create).Methods("POST")
+	r.HandleFunc("/data", dataController.Save).Methods("POST")
 
 	r.HandleFunc("/healthcheck", s.healthcheckHandler)
 
