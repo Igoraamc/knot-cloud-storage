@@ -13,7 +13,7 @@ type DataStore struct{}
 
 type IDataStore interface {
 	Get(order string, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error)
-	Create(data Data) error
+	Save(data Data) error
 	Delete(param bson.M) error
 }
 
