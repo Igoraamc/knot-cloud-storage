@@ -12,9 +12,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var dataInteractor = interactor.NewDataInteractor()
-
-type DataController struct{}
+type DataController struct {
+	DataInteractor interactor.DataInteractor
+}
 
 type DataInterface interface {
 	GetAll()
@@ -27,8 +27,8 @@ type errorMessage struct {
 	message string
 }
 
-func NewDataController() *DataController {
-	return &DataController{}
+func NewDataController(dataInteractor interactor.DataInteractor) DataController {
+	return DataController{dataInteractor}
 }
 
 func respondWithError(w http.ResponseWriter, code int, msg string) {
@@ -50,7 +50,7 @@ func (d *DataController) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	things, err := dataInteractor.GetAll(order, skip, take, startDate, finishDate)
+	things, err := d.DataInteractor.GetAll(order, skip, take, startDate, finishDate)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -65,7 +65,7 @@ func (d *DataController) GetByID(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnprocessableEntity, errUrl.message)
 		return
 	}
-	thing, err := dataInteractor.GetByID(params["id"], order, skip, take, startDate, finishDate)
+	thing, err := d.DataInteractor.GetByID(params["id"], order, skip, take, startDate, finishDate)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Thing ID")
 	}
@@ -80,7 +80,7 @@ func (d *DataController) Save(w http.ResponseWriter, r *http.Request) {
 	}
 	// thing.ID = bson.NewObjectId()
 	thing.Timestamp = time.Now()
-	if err := dataInteractor.Save(thing); err != nil {
+	if err := d.DataInteractor.Save(thing); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
