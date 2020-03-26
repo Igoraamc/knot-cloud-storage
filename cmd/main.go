@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/CESARBR/knot-cloud-storage/internal/config"
+	"github.com/CESARBR/knot-cloud-storage/pkg/controllers"
 	"github.com/CESARBR/knot-cloud-storage/pkg/data"
+	"github.com/CESARBR/knot-cloud-storage/pkg/interactor"
 	"github.com/CESARBR/knot-cloud-storage/pkg/logging"
 	"github.com/CESARBR/knot-cloud-storage/pkg/server"
 )
@@ -10,13 +12,20 @@ import (
 func main() {
 	config := config.Load()
 
-	storage := data.NewStorage(config.MongoDB.Host, config.MongoDB.Name)
-	storage.Connect()
-
 	logrus := logging.NewLogrus(config.Logger.Level)
 	logger := logrus.Get("Main")
-	logger.Info("Starting KNoT Babeltower")
+	logger.Info("Starting KNoT Cloud Storage")
 
-	server := server.NewServer(config.Server.Port, logrus.Get("Server"))
+	mongo := data.NewMongoDB(config.MongoDB.Host, config.MongoDB.Name)
+	database, err := mongo.Connect()
+	if err != nil {
+		logger.Error(err)
+	}
+
+	dataStore := data.NewDataStore(database)
+	dataInteractor := interactor.NewDataInteractor(dataStore)
+	dataController := controllers.NewDataController(dataInteractor)
+
+	server := server.NewServer(config.Server.Port, logrus.Get("Server"), dataController)
 	server.Start()
 }
