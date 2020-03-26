@@ -4,26 +4,29 @@ import (
 	"time"
 
 	. "github.com/CESARBR/knot-cloud-storage/pkg/entities"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 const collection = "things"
 
-type DataStore struct{}
+type DataStore struct {
+	Database *mgo.Database
+}
 
 type IDataStore interface {
 	Get()
 	Create()
 }
 
-func NewDataStore() DataStore {
-	return DataStore{}
+func NewDataStore(database *mgo.Database) DataStore {
+	return DataStore{database}
 }
 
 func (ds *DataStore) Get(order string, skip int, take int, startDate time.Time, finishDate time.Time) ([]Data, error) {
 	var data []Data
 
-	err := db.C(collection).Find(bson.M{
+	err := ds.Database.C(collection).Find(bson.M{
 		"timestamp": bson.M{
 			"$gt": startDate,
 			"$lt": finishDate,
@@ -42,6 +45,6 @@ func (ds *DataStore) Get(order string, skip int, take int, startDate time.Time, 
 }
 
 func (ds *DataStore) Save(data Data) error {
-	err := db.C(collection).Insert(&data)
+	err := ds.Database.C(collection).Insert(&data)
 	return err
 }

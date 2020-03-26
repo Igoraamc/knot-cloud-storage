@@ -6,21 +6,21 @@ import (
 
 var db *mgo.Database
 
-type Storage struct {
+type MongoDB struct {
 	Server   string
 	Database string
 }
 
-func NewStorage(server string, database string) *Storage {
-	return &Storage{server, database}
+func NewMongoDB(server string, database string) *MongoDB {
+	return &MongoDB{server, database}
 }
 
-func (s *Storage) Connect() error {
+func (s *MongoDB) Connect() (*mgo.Database, error) {
 	session, err := mgo.Dial(s.Server)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	db = session.DB(s.Database)
+	database := session.DB(s.Database)
 
-	return nil
+	return database, nil
 }
